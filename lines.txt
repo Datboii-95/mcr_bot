@@ -1,0 +1,67 @@
+colcon build --symlink-install
+
+source install/setup.bash
+
+
+######--- launch rviz ---######
+rviz2 -d src/mcr_bot/config/drive_bot.rviz
+
+
+
+######--- launch gazebo ---#####
+ros2 launch mcr_bot launch_sim.launch.py world:=./src/mcr_bot/worlds/mcr_world.world
+
+ros2 launch mcr_bot launch_sim.launch.py world:=./src/mcr_bot/worlds/mcr_world_2.world
+
+ros2 launch mcr_bot launch_sim.launch.py world:=./src/mcr_bot/worlds/mcr_world_3.world
+
+
+
+
+######--- launch slam_toolbox ---#####
+ros2 launch slam_toolbox online_async_launch.py slam_params_file:=./src/mcr_bot/config/mapper_params_online_async.yaml use_sim_time:=true
+
+ros2 launch mcr_bot online_async_launch.py slam_params_file:=./src/mcr_bot/config/mapper_params_online_async.yaml use_sim_time:=true
+
+ros2 launch slam_toolbox online_async_launch.py slam_params_file:=./src/mcr_bot/config/mapper_params_online_async.yaml use_sim_time:=true
+
+
+#####--- launch Nav2 ---###
+ros launch mcr_bot navigation_launch.py use_sim_time:=true
+
+
+
+
+ros2 run nav2_map_server map_server --ros-args -p yaml_filename:=my_map_save.yaml -p use_sim_time:=true
+ros2 run nav2_map_server map_server --ros-args -p yaml_filename:=/home/alexspanos/dev_ws/map_save.yaml -p use_sim_time:=true
+
+
+
+ros2 run nav2_util lifecycle_bringup map_server
+
+ros2 run nav2_amcl amcl --ros-args -p use_sim_time:=true
+
+ros2 run nav2_util lifecycle_bringup amcl amcl --ros-args -p use_sim_time:=true
+
+ros2 run nav2_util lifecycle_bringup amcl
+
+ros2 launch nav2_bringup navigation_launch.py use_sim_time:=true
+
+
+wheels are 6.7cm diamter
+
+wheels are 2.6 width
+
+base is 30cm diameter
+
+
+ros2 run twist_mux twist_mux --ros-args --params-file ./src/mcr_bot/config/twist_mux.yaml -r cmd_vel_out:=diff_cont/cmd_vel_unstamped
+
+ros2 launch nav2_bringup localization_launch.py map_file:=/home/alexspanos/dev_ws/map_save.yaml use_sim_time:=true
+
+ros2 launch nav2_bringup localization_launch.py map:=/home/alexspanos/dev_ws/map_save.yaml use_sim_time:=true
+
+ros2 launch nav2_bringup localization_launch.py map:=/home/alexspanos/dev_ws/map_save.yaml use_sim_time:=true map_subscribe_transient_local:=true
+
+
+ros2 launch mcr_bot navigation_launch.py use_sim_time:=true map_subscribe_transient_local:=true

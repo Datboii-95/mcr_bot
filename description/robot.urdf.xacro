@@ -1,7 +1,21 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro"  name="robot">
+    
+    <xacro:arg name="use_ros2_control" default="true"/>
 
-    <!-- Example link -->
-    <link name="base_link"></link>
+    <!-- Corrected the typo in xacro:include -->
+    <xacro:if value="$(arg use_ros2_control)">
+        <xacro:include filename="ros2_control.xacro"/>
+    </xacro:if>
+    <xacro:unless value="$(arg use_ros2_control)">
+        <xacro:include filename="gazebo_control.xacro"/>
+    </xacro:unless>
 
+    <!-- Corrected the typo in xacro:include -->
+    <xacro:include filename="robot_core.xacro"/>
+
+
+    <!-- Corrected the typo in xacro:include -->
+    <xacro:include filename="lidar.xacro"/>
+    
 </robot>
